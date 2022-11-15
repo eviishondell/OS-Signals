@@ -8,9 +8,11 @@
 int num_alarms = 0;
 time_t start_time,end_time,total_secs; 
 
+bool trig = false;
 void handler(int signum)
 { 
   printf("Hello World!\n");
+  trig = true;
   num_alarms += 1;
 }
 
@@ -27,11 +29,12 @@ int main(int argc, char * argv[])
   start_time = time(NULL); 
   signal(SIGALRM,handler); 
   signal(SIGINT, handler_sigint); 
-  while(1) { 
-  alarm(1);
-  // num_alarms += 1;
-  sleep(1);
-  printf("Turning was right!\n");
-  }  
-  return 0; 
+  for(;;) { 
+    trig = false;
+    signal(SIGALRM,handler);
+    alarm(1);
+    while(trig == false);
+    printf("Turning was right!\n");
+    }  
+    return 0; 
 }
